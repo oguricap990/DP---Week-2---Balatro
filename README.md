@@ -1,1 +1,5 @@
 # DP---Week-2---Balatro
+nvariant-nya apa? Urutan 6 fase di RunSession::run() — generate input ke score ke reward ke update money ke shop ke advance round jalan 3x, urutannya fix, gak boleh diutak-atik.
+Bagian mutable-nya apa? Semua yang dipanggil RunSession lewat interface: IInputGenerator, IScoringRule, IRewardRule, dan isi ShopSystem. Ini yang boleh diganti-ganti implementasinya.
+Kenapa ganti InputGenerator gak ngubah RunSession? Karena RunSession cuma pegang pointer ke interface IInputGenerator, bukan ke FixedInputGenerator atau RandomInputGenerator langsung. Selama class baru implement interface yang sama, RunSession gak tahu (dan gak peduli) itu implementasi yang mana — ini inti dari polymorphism/dependency inversion.
+Kalau scoring logic ditaruh di RunSession, apa akibatnya? RunSession jadi tahu detail konkret, bukan cuma abstraksi. Tiap ganti logic scoring, kalian harus edit "otak" invariant-nya padahal tujuannya justru supaya core loop gak pernah disentuh saat mengganti perilaku.
