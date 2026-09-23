@@ -1,0 +1,10 @@
+# DP---Week-2---Balatro
+Reflection
+
+Apa struktur invariant dalam program ini? Invariant-nya adalah urutan enam fase yang dijaga oleh RunSession: generate input, compute base score, compute reward, update money, shop phase, advance round. RunSession hanya memanggil langkah-langkah ini secara berurutan selama tiga round. Ia tidak pernah membuat input, menghitung skor, atau menghitung reward sendiri — ia hanya memanggil implementasi IInputGenerator, IScoringRule, dan IRewardRule apa pun yang diberikan lewat constructor-nya.
+
+Bagian mana yang mutable? Semua yang berada di balik interface bersifat mutable: cara input dibuat (FixedInputGenerator vs RandomInputGenerator), cara base score dihitung (SimpleScoringRule), cara reward dihitung dari skor tersebut (DirectRewardRule vs BonusRewardRule), dan apa yang ditawarkan shop (ShopSystem). Semua ini bisa diganti dengan bebas karena RunSession hanya bergantung pada interface-nya, bukan pada tipe konkretnya.
+
+Saat saya mengganti InputGenerator, kenapa RunSession tidak ikut berubah? RunSession tidak pernah tahu tipe konkret dari generator — ia hanya memanggil generate() lewat pointer IInputGenerator. Mengganti FixedInputGenerator menjadi RandomInputGenerator di main.cpp mengubah apa yang dikembalikan generate(), tapi baris pemanggilan di dalam RunSession tetap sama persis. Inilah inti dari bergantung pada interface, bukan pada class konkret.
+
+Apa yang akan terjadi jika logika scoring diletakkan di dalam RunSession? Invariant akan tercampur dengan aturan yang seharusnya mutable. Setiap perubahan pada scoring (misalnya rumus baru) akan memaksa kita mengedit RunSession langsung, sehingga berisiko tidak sengaja mengubah urutan fase itu sendiri. Ini juga membuat mustahil untuk mengganti aturan scoring secara independen, sehingga menggagalkan tujuan utama memisahkan struktur dari perilaku — yang justru menjadi inti dari latihan ini.
